@@ -8,6 +8,8 @@
 
 char *usage = "Usage: generate_data <-s size> [-t text]\nSize must be greater than 0\n";
 
+void print_progress(double progress, uint64_t max);
+
 int main (int argc, char **argv)
 {
     char *text = NULL;
@@ -42,19 +44,49 @@ int main (int argc, char **argv)
         }
     }
 
-    if (data_size <= 0 && text == NULL) {
-        printf(usage);
+    if (data_size <= 0 || text == NULL) {
+        fprintf(stderr, usage);
         return 1;
     }
 
+    fprintf(stderr, "Creating a file of size: %" PRIu64"\n", data_size);
+
     uint64_t total_output;
+
+    // Progress bar initialization
+    double progress = 0;
+
     while (total_output < data_size) {
         if ((data_size - total_output) < read_len) {
             read_len = data_size - total_output;
         }
         printf("%.*s", read_len, text);
         total_output += read_len;
+
+
+        print_progress((double)total_output, data_size);
     }
 
+    fprintf(stderr, "\nSuccessfully created file!");
+
     return 0;
+}
+
+void print_progress(double progress, uint64_t max)
+{
+    int bar_width = 70;
+
+    fprintf(stderr, "\r[");
+    int pos = progress/max * bar_width;
+    for (int i = 0; i < bar_width; ++i) {
+        if (i < pos) {
+            fprintf(stderr, "=");
+        } else if (i == pos) {
+            fprintf(stderr, ">");
+        } else {
+            fprintf(stderr, " ");
+        }
+    }
+    fprintf(stderr, "] %.*f%%", 2, progress/max * 100);
+    fflush(stderr);
 }
