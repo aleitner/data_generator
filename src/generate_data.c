@@ -75,10 +75,11 @@ int main (int argc, char **argv)
 void print_progress(double progress, uint64_t max)
 {
     int bar_width = 70;
+    int i;
 
     fprintf(stderr, "\r[");
     int pos = progress/max * bar_width;
-    for (int i = 0; i < bar_width; ++i) {
+    for (i = 0; i < bar_width; ++i) {
         if (i < pos) {
             fprintf(stderr, "=");
         } else if (i == pos) {
