@@ -19,3 +19,6 @@ run
 
 example for writing to file
 `./bin/generate -s 715112054784 -t "It's in that place where I put that thing that time. " > /Volumes/2tbjunk/666gb`
+
+example for writing to stdout
+`./bin/generate -s 715112054784 -t "It's in that place where I put that thing that time. " 2> /dev/null

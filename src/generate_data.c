@@ -51,7 +51,7 @@ int main (int argc, char **argv)
 
     fprintf(stderr, "Creating a file of size: %" PRIu64"\n", data_size);
 
-    uint64_t total_output;
+    uint64_t total_output = 0;
 
     // Progress bar initialization
     double progress = 0;
@@ -60,14 +60,14 @@ int main (int argc, char **argv)
         if ((data_size - total_output) < read_len) {
             read_len = data_size - total_output;
         }
-        printf("%.*s", read_len, text);
+        fprintf(stdout, "%.*s", read_len, text);
         total_output += read_len;
 
 
         print_progress((double)total_output, data_size);
     }
 
-    fprintf(stderr, "\nSuccessfully created file!");
+    fprintf(stderr, "\nSuccessfully generated data!");
 
     return 0;
 }
