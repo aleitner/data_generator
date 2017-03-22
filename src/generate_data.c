@@ -5,6 +5,7 @@
 #include <unistd.h>
 #include <stdint.h>
 #include <inttypes.h>
+#include <math.h>
 
 char *usage = "Usage: generate_data <-s size> [-t text]\nSize must be greater than 0\n";
 
@@ -15,7 +16,6 @@ int main (int argc, char **argv)
     char *text = NULL;
     uint64_t data_size = 0;
     uint64_t text_length;
-    int read_len;
     int index;
     int c;
 
@@ -29,7 +29,6 @@ int main (int argc, char **argv)
             case 't':
                 text = optarg;
                 text_length = strlen(text);
-                read_len = text_length;
                 break;
             case '?':
                 if (optopt == 's') {
@@ -49,31 +48,55 @@ int main (int argc, char **argv)
         return 1;
     }
 
+    // Begin calculating buffer to write to file.
+    // writing entire buffers is faster than writing smaller pieces
+    char buf_text[BUFSIZ];
+    memset(buf_text, '\0', BUFSIZ);
+
+    int times_fit_into_buf_text = BUFSIZ/text_length;
+    // This isn't bufsize because rounding
+    int buf_text_length = times_fit_into_buf_text * text_length;
+    int i;
+    int j;
+    for (i = 0; i < times_fit_into_buf_text; i++) {
+        for (j = 0; j < text_length; j++) {
+            buf_text[(i*text_length) + j] = text[j];
+        }
+    }
+
+    int read_len = buf_text_length;
+
     fprintf(stderr, "Creating a file of size: %" PRIu64"\n", data_size);
 
     uint64_t total_output = 0;
 
     // Progress bar initialization
-    double progress = 0;
+    int iteration = 0;
+    int total_iterations = ceil((double)data_size/read_len);
+    int iteration_cycle = ceil((double)total_iterations/100);
 
     while (total_output < data_size) {
         if ((data_size - total_output) < read_len) {
             read_len = data_size - total_output;
         }
-        fprintf(stdout, "%.*s", read_len, text);
+        fprintf(stdout, "%.*s", read_len, buf_text);
         total_output += read_len;
 
+        if (iteration % iteration_cycle == 0 || data_size == total_output) {
+            print_progress(total_output, data_size);
+        }
 
-        print_progress((double)total_output, data_size);
+        iteration+=1;
     }
 
-    fprintf(stderr, "\nSuccessfully generated data!");
+    fprintf(stderr, "\nSuccessfully created file!");
 
     return 0;
 }
 
 void print_progress(double progress, uint64_t max)
 {
+
     int bar_width = 70;
     int i;
 

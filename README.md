@@ -9,10 +9,10 @@ Windows
 
 Linux
 32 bit
-`/usr/local/gcc-4.8.1-for-linux32/bin/i586-pc-linux-gcc --static src/generate_data.c -o bin/generate_data_linux32`
+`/usr/local/gcc-4.8.1-for-linux32/bin/i586-pc-linux-gcc --static src/generate_data.c -o bin/generate_data_linux32 -lm`
 
 64 bit
-`/usr/local/gcc-4.8.1-for-linux64/bin/x86_64-pc-linux-gcc --static src/generate_data.c -o bin/generate_data_linux64`
+`/usr/local/gcc-4.8.1-for-linux64/bin/x86_64-pc-linux-gcc --static src/generate_data.c -o bin/generate_data_linux64 -lm`
 
 run
 `bin/generate_data <-s size> [-t text]`
